@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/sergiovirahonda/echo-api/internal/cfg"
 	"github.com/sergiovirahonda/echo-api/internal/errors"
 	"github.com/sergiovirahonda/echo-api/internal/models"
 	echos "github.com/sergiovirahonda/echo-api/internal/services/echo"
@@ -17,13 +18,15 @@ type Controller struct {
 func NewController(
 	routes *echo.Group,
 	s echos.Service,
-) {
+) *Controller {
 	c := &Controller{
 		service: s,
 	}
 
 	routes.POST("/echo/", c.handlePost)
 	routes.GET("/whats-echoed/", c.handleGetAll)
+
+	return c
 }
 
 // Controllers
@@ -38,20 +41,25 @@ func NewController(
 // @Success 201 {object} models.EchoResponseFromRequest
 // @Router /v0/echo/ [POST]
 func (c *Controller) handlePost(ctx echo.Context) error {
+	logger := cfg.GetLogger()
+	logger.Info("handlePost")
 	payload := &models.EchoRequest{}
 	defer ctx.Request().Body.Close()
 	err := json.NewDecoder(ctx.Request().Body).Decode(&payload)
 	if err != nil {
 		return errors.GetHTTPError(err)
 	}
+	logger.Infof("payload value: %v", payload.Value)
 	entity, err := c.service.CreateFromRequest(
 		ctx.Request().Context(),
 		payload,
 	)
+	logger.Infof("entity value: %v", entity.Value)
 	if err != nil {
 		return errors.GetHTTPError(err)
 	}
 	response := entity.ToResponseFromRequest()
+	logger.Infof("response value: %v", response.Value)
 	return ctx.JSON(http.StatusCreated, response)
 }
 
