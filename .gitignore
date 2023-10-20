@@ -21,4 +21,4 @@
 go.work
 
 # SQL files
-*.sql
+database.sql

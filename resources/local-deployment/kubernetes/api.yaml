@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo-api
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: echo-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: echo-api
+    spec:
+      containers:
+      - name: echo-api
+        image: echo-api:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh"]
+        args: ["-c", "./echo-api"]
+        ports:
+        - name: http
+          containerPort: 8080
+        envFrom:
+          - configMapRef:
+              name: echo-api-configmap
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo-api
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: echo-api
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 30001
