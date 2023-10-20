@@ -1,6 +1,8 @@
 package db
 
 import (
+	"fmt"
+
 	"github.com/glebarez/sqlite"
 	"github.com/sergiovirahonda/echo-api/internal/cfg"
 	dto "github.com/sergiovirahonda/echo-api/internal/infrastructure/dtos"
@@ -19,7 +21,8 @@ func NewTestConnection() *gorm.DB {
 	// In memory database
 	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		e := fmt.Sprintf("Failed to connect to test database: %v", err)
+		panic(e)
 	}
 	return db
 }
