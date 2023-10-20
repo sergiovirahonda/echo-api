@@ -29,3 +29,11 @@ func (e *BadRequest) Is(err error) bool {
 func NewBadRequest(msg string) *BadRequest {
 	return &BadRequest{New(msg)}
 }
+
+// Custom errors
+
+var (
+	// Echo errors
+	InvalidEchoRequestError = errors.New("invalid echo request")
+	InvalidValueError       = errors.New("invalid value")
+)
