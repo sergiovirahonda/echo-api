@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -14,14 +15,26 @@ var (
 	validate = validator.New()
 )
 
+// HTTP models
+
 type EchoResponse struct {
-	Timestamp time.Time `json:"timestamp"`
-	Value     string    `json:"value"`
+	Time  time.Time `json:"time"`
+	Value string    `json:"value"`
+}
+
+type EchoResponses struct {
+	Echos []EchoResponse `json:"whats-echoed"`
 }
 
 type EchoRequest struct {
-	Value string `json:"value" validate:"required"`
+	Value string `json:"echo-me" validate:"required"`
 }
+
+type EchoResponseFromRequest struct {
+	Value string `json:"echo-you"`
+}
+
+// Entities
 
 type Echo struct {
 	ID        uuid.UUID `json:"id"`
@@ -45,6 +58,29 @@ func (e *EchoRequest) Validate() error {
 		return errors.InvalidValueError
 	}
 	return nil
+}
+
+func (e *Echo) ToResponse() *EchoResponse {
+	return &EchoResponse{
+		Time:  e.Timestamp,
+		Value: e.Value,
+	}
+}
+
+func (e *Echos) ToResponses() *EchoResponses {
+	var responses []EchoResponse
+	for _, echo := range *e {
+		responses = append(responses, *echo.ToResponse())
+	}
+	return &EchoResponses{
+		Echos: responses,
+	}
+}
+
+func (e *Echo) ToResponseFromRequest() *EchoResponseFromRequest {
+	return &EchoResponseFromRequest{
+		Value: fmt.Sprintf("%s echo", e.Value),
+	}
 }
 
 // Factories

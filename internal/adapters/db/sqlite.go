@@ -1,29 +1,34 @@
 package db
 
 import (
-	"database/sql"
-
+	"github.com/glebarez/sqlite"
 	"github.com/sergiovirahonda/echo-api/internal/cfg"
-	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/sqlitedialect"
-	"github.com/uptrace/bun/extra/bundebug"
+	dto "github.com/sergiovirahonda/echo-api/internal/infrastructure/dtos"
+	"gorm.io/gorm"
 )
 
-func NewConnection(config cfg.Config) *bun.DB {
-	conn, err := sql.Open("sqlite3", config.Database.File)
+func NewConnection(config cfg.Config) *gorm.DB {
+	db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
-	db := bun.NewDB(conn, sqlitedialect.New())
-	db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
 	return db
 }
 
-func NewTestConnection() *bun.DB {
-	conn, err := sql.Open("sqlite3", ":memory:")
+func NewTestConnection() *gorm.DB {
+	// In memory database
+	db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
-	db := bun.NewDB(conn, sqlitedialect.New())
 	return db
+}
+
+func Migrate(db *gorm.DB) {
+	logger := cfg.GetLogger()
+	err := db.AutoMigrate(&dto.Echo{})
+	logger.Info("Migrations executed")
+	if err != nil {
+		panic(err)
+	}
 }
