@@ -5,14 +5,14 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sergiovirahonda/echo-api/internal/models"
-	"github.com/uptrace/bun"
+	"gorm.io/gorm"
 )
 
 type Echo struct {
-	bun.BaseModel `bun:"table:echo,alias:echo"`
-	ID            uuid.UUID `bun:"id,type:uuid"`
-	Timestamp     time.Time `bun:"created_at,nullzero,notnull,default:current_timestamp"`
-	Value         string    `bun:"value,type:text,notnull"`
+	gorm.Model
+	ID        uuid.UUID `gorm:"type:uuid;"`
+	Timestamp time.Time `gorm:"type:timestamp;not null"`
+	Value     string    `gorm:"type:varchar(255);not null"`
 }
 
 type Echos []Echo

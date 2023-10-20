@@ -1,0 +1,118 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample and very simple Echo API.",
+        "title": "Echo API",
+        "contact": {
+            "name": "Sergio Virahonda",
+            "url": "https://www.linkedin.com/in/sergiovirahonda/",
+            "email": "svirahonda@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/v0",
+    "paths": {
+        "/v0/echo/": {
+            "post": {
+                "description": "Creates an Echo resource and returns it echoed.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "echo"
+                ],
+                "summary": "Creates an Echo resource.",
+                "parameters": [
+                    {
+                        "description": "Echo object",
+                        "name": "resource",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.EchoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.EchoResponseFromRequest"
+                        }
+                    }
+                }
+            }
+        },
+        "/v0/whats-echoed/": {
+            "get": {
+                "description": "Gets all Echo resources.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "echo"
+                ],
+                "summary": "Gets all Echo resources.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.EchoResponses"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.EchoRequest": {
+            "type": "object",
+            "required": [
+                "echo-me"
+            ],
+            "properties": {
+                "echo-me": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.EchoResponse": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.EchoResponseFromRequest": {
+            "type": "object",
+            "properties": {
+                "echo-you": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.EchoResponses": {
+            "type": "object",
+            "properties": {
+                "whats-echoed": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.EchoResponse"
+                    }
+                }
+            }
+        }
+    }
+}
